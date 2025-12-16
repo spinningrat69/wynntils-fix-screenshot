@@ -1,0 +1,70 @@
+plugins {
+    id "dev.architectury.loom" version "1.11-SNAPSHOT"
+}
+
+group = "com.wynntils.fixscreenshot"
+version = "0.1.0"
+
+base {
+    archivesName = "wynntils-fix-screenshot"
+}
+
+loom {
+    mixin.defaultRefmapName = "wynntils-fix-screenshot.refmap.json"
+}
+
+repositories {
+    maven { url "https://maven.architectury.dev/" }
+    maven { url "https://maven.fabricmc.net/" }
+    maven { url "https://maven.minecraftforge.net/" } // loom needs forge tool deps
+    maven { url "https://jitpack.io" }
+    mavenCentral()
+}
+
+def wynntilsLocal = file("libs/wynntils.jar")
+
+dependencies {
+    minecraft "com.mojang:minecraft:${minecraft_version}"
+    mappings loom.layered() {
+        officialMojangMappings()
+    }
+
+    modImplementation "net.fabricmc:fabric-loader:${fabric_loader_version}"
+
+    if (wynntilsLocal.exists()) {
+        modCompileOnly files(wynntilsLocal)
+    } else if (project.hasProperty("wynntils_maven")) {
+        modCompileOnly("${project.property("wynntils_maven")}") { transitive = false }
+    } else {
+        logger.lifecycle("Wynntils jar not provided; compiling against local stub for mixin targets")
+    }
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = "UTF-8"
+}
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(java_version)
+    }
+    withSourcesJar()
+}
+
+tasks.withType(Jar).configureEach {
+    // Exclude local Wynntils stub so we never ship conflicting classes
+    exclude("com/wynntils/utils/SystemUtils.class")
+}
+
+processResources {
+    def replaceProperties = [
+            mod_version           : project.version,
+            minecraft_version     : minecraft_version,
+            fabric_loader_version : fabric_loader_version
+    ]
+    inputs.properties replaceProperties
+
+    filesMatching("fabric.mod.json") {
+        expand replaceProperties
+    }
+}

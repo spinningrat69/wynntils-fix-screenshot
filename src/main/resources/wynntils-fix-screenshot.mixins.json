@@ -1,0 +1,12 @@
+{
+  "required": true,
+  "package": "com.wynntils.fixscreenshot.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "refmap": "wynntils-fix-screenshot.refmap.json",
+  "client": [
+    "SystemUtilsMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

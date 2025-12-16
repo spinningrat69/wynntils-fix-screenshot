@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "id": "wynntils-fix-screenshot",
+  "version": "${mod_version}",
+  "name": "Wynntils Fix Screenshot",
+  "description": "Fixes Wayland clipboard failures for Wynntils item screenshots.",
+  "authors": [
+    "spinningrat69"
+  ],
+  "license": "MIT",
+  "environment": "*",
+  "depends": {
+    "fabricloader": ">=${fabric_loader_version}",
+    "minecraft": "${minecraft_version}",
+    "java": ">=21",
+    "wynntils": "*"
+  },
+  "mixins": [
+    "wynntils-fix-screenshot.mixins.json"
+  ]
+}
